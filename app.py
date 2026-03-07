@@ -81,9 +81,35 @@ if st.button("Deneyi Tasarla! ✨"):
                 st.balloons() # Başarı efekti!
                 st.success(f"Deney başarıyla hazırlandı! 🧪")
                 st.markdown(chat_completion.choices[0].message.content)
+
+                # --- PDF OLUŞTURMA BÖLÜMÜ ---
+                st.divider()
+                
+                def pdf_hazirla(metin):
+                    pdf = FPDF()
+                    pdf.add_page()
+                    pdf.set_font("Helvetica", size=12)
+                    # Karakterleri PDF dostu hale getiriyoruz
+                    duzeltme = {"İ":"I","ı":"i","Ş":"S","ş":"s","Ğ":"G","ğ":"g","Ç":"C","ç":"c","Ö":"O","ö":"o","Ü":"U","ü":"u"}
+                    yeni_metin = metin
+                    for k, v in duzeltme.items():
+                        yeni_metin = yeni_metin.replace(k, v)
+                    safe_text = yeni_metin.encode('latin-1', 'replace').decode('latin-1')
+                    pdf.multi_cell(0, 10, safe_text)
+                    return bytes(pdf.output())
+
+                # Butonu göster
+                pdf_data = pdf_hazirla(deney_sonucu)
+                st.download_button(
+                    label="📄 Deneyi PDF Olarak İndir",
+                    data=pdf_data,
+                    file_name="deney_raporu.pdf",
+                    mime="application/pdf"
+                )
                 
             except Exception as e:
                 st.error(f"Bir hata oluştu: {e}")
 
 st.divider()
+
 st.caption("EcoLab AI - Geleceğin Bilim İnsanları İçin")
