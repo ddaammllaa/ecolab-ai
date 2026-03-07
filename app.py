@@ -74,10 +74,7 @@ if st.button("Deneyi Tasarla! ✨"):
                 st.divider()
                 
                 st.markdown(deney_sonucu)
-
-                # --- PDF OLUŞTURMA BÖLÜMÜ ---
-                st.divider()
-                
+                         
                 # --- PDF OLUŞTURMA BÖLÜMÜ ---
                 st.divider()
                 
@@ -108,3 +105,4 @@ if st.button("Deneyi Tasarla! ✨"):
 
 st.divider()
 st.caption("EcoLab AI - Geleceğin Bilim İnsanları İçin")
+
