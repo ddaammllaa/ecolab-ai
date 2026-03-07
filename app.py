@@ -1,5 +1,6 @@
 import streamlit as st
 from groq import Groq
+from fpdf import FPDF
 
 # --- 1. BAĞLANTI VE SAYFA AYARI ---
 # Kendi API anahtarını buraya yapıştır
@@ -113,3 +114,4 @@ if st.button("Deneyi Tasarla! ✨"):
 st.divider()
 
 st.caption("EcoLab AI - Geleceğin Bilim İnsanları İçin")
+
