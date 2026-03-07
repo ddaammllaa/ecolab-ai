@@ -26,7 +26,7 @@ konu = st.sidebar.selectbox(
 
 hazirlik_suresi = st.sidebar.select_slider(
     "Deney ne kadar uğraştırıcı olsun?",
-    options=["Farketmez", "Kısa ve Kolay", "Orta Şekerli", "Kapsamlı Proje"]
+    options=["Farketmez", "Kısa ve Kolay", "Orta", "Kapsamlı Proje"]
 )
 
 # --- 3. ANA EKRAN ---
@@ -105,4 +105,5 @@ if st.button("Deneyi Tasarla! ✨"):
 
 st.divider()
 st.caption("EcoLab AI - Geleceğin Bilim İnsanları İçin")
+
 
