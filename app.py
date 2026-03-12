@@ -18,7 +18,7 @@ vision_model = genai.GenerativeModel('gemini-1.5-flash')
 
 st.set_page_config(page_title="EcoLab AI", page_icon="🌱", layout="wide")
 
-# --- 2. VERİTABANI İŞLEMLERİ ---
+# --- 2. VERİTABANI İŞLEMLERİ (KALICILIK) ---
 def veritabani_hazırla():
     conn = sqlite3.connect('deney_verileri.db')
     c = conn.cursor()
@@ -64,7 +64,8 @@ def fotograf_uygun_mu(yuklenen_dosya):
         3. UYGUNSUZ (Cinsel vb.) bir içerik var mı?
         
         Eğer bunlardan biri varsa 'YASAK' yaz. 
-        Eğer bunlar yoksa 'UYGUN' yaz. Sadece tek kelime cevap ver."""
+        Eğer bunlar yoksa ve bir makete, deneye veya projeye benziyorsa 'UYGUN' yaz.
+        Sadece tek kelime cevap ver."""
         cevap = vision_model.generate_content([istek, img])
         return cevap.text.strip().upper()
     except: return "UYGUN"
@@ -87,13 +88,14 @@ with st.sidebar:
                 st.image(f_url, use_container_width=True)
                 st.caption(f"{f_sinif} | {f_konu}")
     else:
-        st.info("Henüz paylaşım yok. 😊")
+        st.info("Henüz paylaşım yok. İlk sen paylaş! 😊")
     
     st.divider()
     st.header("🎓 Bilgilerini Seç")
-    sinif = st.selectbox("Sınıf Seç:", list(konu_listesi.keys()))
-    konu = st.selectbox("Ünite Seç:", konu_listesi[sinif])
-    atiklar = st.multiselect("Malzemelerin:", ["Plastik Şişe", "Karton Kutu", "Gazete", "Kapak", "Pipet", "Fener", "Ayna"])
+    sinif = st.selectbox("Kaçıncı sınıfa gidiyorsun?", list(konu_listesi.keys()))
+    konu = st.selectbox("Ünite Seçimi:", konu_listesi[sinif])
+    atiklar = st.multiselect("Malzeme Depon:", ["Plastik Şişe", "Karton Kutu", "Gazete", "Kapak", "Pipet", "Süt Kutusu", "Fener", "Ayna", "Büyüteç"])
+    zorluk = st.select_slider("Zorluk Seviyesi:", options=["Fark Etmez", "Kolay", "Orta", "Zor"], value="Fark Etmez")
 
 # --- 5. ANA EKRAN ---
 st.title("🌱 EcoLab AI: Atıktan Bilime")
@@ -105,8 +107,8 @@ if st.button("Deneyi Tasarla! ✨", use_container_width=True):
     if not atiklar:
         st.error("Lütfen malzeme seç!")
     else:
-        with st.spinner('Deneyin tasarlanıyor...'):
-            komut = f"{sinif} {konu} ünitesi için {atiklar} ile Türkçe bir deney hazırla. Başlıkları kalın yap."
+        with st.spinner('Deneyin hazırlanıyor...'):
+            komut = f"{sinif} {konu} ünitesi için {atiklar} ile Türkçe bir deney hazırla. Başlıkları büyük ve kalın yap."
             res = client.chat.completions.create(messages=[{"role":"user","content":komut}], model="llama-3.3-70b-versatile")
             st.session_state.deney_metni = res.choices[0].message.content
             st.session_state.deney_hazir = True
@@ -114,31 +116,37 @@ if st.button("Deneyi Tasarla! ✨", use_container_width=True):
             st.rerun()
 
 if st.session_state.deney_hazir:
-    st.success("Deney hazır! ✅")
+    st.success(f"Deney başarıyla hazırlandı! ✅")
     st.markdown(st.session_state.deney_metni)
     
-    # PDF YERİNE GARANTİ METİN DOSYASI
-    st.download_button("📄 Deney Raporunu İndir (.txt)", data=st.session_state.deney_metni, file_name="deney_raporu.txt", use_container_width=True)
+    st.divider()
+    # PDF HATASI ALMAMAK İÇİN .TXT OLARAK İNDİRME
+    st.download_button("📄 Deney Raporunu İndir (.txt)", data=st.session_state.deney_metni, file_name="ecolab_deney.txt", use_container_width=True)
+    
+    # GERİ BİLDİRİM FORMU
+    with st.expander("😊 Gelişim İçin Fikir Ver"):
+        st.components.v1.iframe("https://forms.gle/kKBKzXZhYCDRKbg1A", height=350)
     
     if st.button("🗑️ Baştan Başla", use_container_width=True):
         st.session_state.deney_hazir = False
+        st.session_state.deney_metni = ""
         st.rerun()
 
     st.divider()
     st.subheader("📸 Deneyini Vitrine Gönder")
-    foto_dosya = st.file_uploader("Maket fotoğrafını seç!", type=["jpg", "png", "jpeg"])
+    foto_dosya = st.file_uploader("Fotoğraf seç!", type=["jpg", "png", "jpeg"])
 
     if foto_dosya is not None:
-        if st.button("Onayla ve Paylaş 🚀"):
+        if st.button("Onayla ve Vitrine Gönder 🚀"):
             with st.spinner('AI Analiz Ediyor...'):
                 sonuc = fotograf_uygun_mu(foto_dosya)
                 if "YASAK" in sonuc:
-                    st.error("⚠️ Güvenlik kuralları (yüz vb.) nedeniyle reddedildi.")
+                    st.error("⚠️ Üzgünüm, güvenlik kuralları gereği yüz veya uygunsuz içerik içeren fotoğrafları paylaşamam.")
                 else:
                     link = foto_yukle_imgbb(foto_dosya)
                     if link:
                         vitrine_ekle_kalici(link, sinif, konu)
-                        st.success("✅ Vitrine eklendi!")
+                        st.success("✅ Deneyin Topluluk Vitrinine Eklendi!")
                         st.snow()
                         time.sleep(2)
                         st.rerun()
