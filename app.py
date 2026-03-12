@@ -60,10 +60,12 @@ def pdf_hazirla(metin):
     pdf.set_font("Helvetica", size=12)
     duzeltme = {"İ":"I","ı":"i","Ş":"S","ş":"s","Ğ":"G","ğ":"g","Ç":"C","ç":"c","Ö":"O","ö":"o","Ü":"U","ü":"u"}
     for k, v in duzeltme.items(): metin = metin.replace(k, v)
+    
     pdf.multi_cell(0, 10, metin.encode('latin-1', 'replace').decode('latin-1'))
     
-    # Yeni FPDF sürümleri için en güvenli bayt çıktısı alma yolu:
-    return bytes(pdf.output())
+    # En güvenli bayt alma yöntemi budur:
+    pdf_output = pdf.output()
+    return bytes(pdf_output)
 
 def fotograf_uygun_mu(yuklenen_dosya):
     try:
@@ -176,5 +178,6 @@ if st.session_state.deney_hazir:
 # --- 6. İMZA ---
 st.divider()
 st.markdown("<h5 style='text-align: center;'>EcoLab AI © 2026 | Damla</h5>", unsafe_allow_html=True)
+
 
 
