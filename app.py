@@ -1,6 +1,7 @@
 import streamlit as st
 from groq import Groq
 from fpdf import FPDF
+import streamlit.components.v1 as components
 
 # --- 1. BAĞLANTI VE SAYFA AYARI ---
 # GitHub'da güvenli kalması için anahtarı secrets üzerinden alıyoruz
@@ -95,12 +96,22 @@ if st.button("Deneyi Tasarla! ✨"):
                     file_name="deney_raporu.pdf",
                     mime="application/pdf"
                 )
+                # --- GOOGLE FORM GÖMME ---
+                st.write("") # Küçük bir boşluk
+                with st.expander("😊 Uygulamayı geliştirmem için bana fikir ver"):
+                    st.write("Aşağıdaki form üzerinden anonim geri bildirim bırakabilirsin:")
+                    
+                    # Buradaki linki kendi Google Form linkinle değiştirmeyi unutma!
+                    form_linki = "https://forms.gle/kKBKzXZhYCDRKbg1A"
+                    
+                    st.components.v1.iframe(form_linki, height=350, scrolling=True)
 
             except Exception as e:
                 st.error(f"Bir hata oluştu: {e}")
 
 st.divider()
-st.caption("EcoLab AI - Geleceğin Bilim İnsanları İçin")
+st.caption("EcoLab AI © 2026 | Damla")
+
 
 
 
