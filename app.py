@@ -108,7 +108,7 @@ if st.button("Deneyi Tasarla! ✨", use_container_width=True):
         st.error("Lütfen malzeme seç!")
     else:
         with st.spinner('Deneyin hazırlanıyor...'):
-            komut = f"{sinif} {konu} ünitesi için {atiklar} ile Türkçe bir deney hazırla. Başlıkları büyük ve kalın yap."
+            komut = f"{sinif} {konu} ünitesi için {atiklar} ile Türkçe bir deney hazırla yabancı kelime sakın kullanma. Başlıkları büyük ve kalın yap."
             res = client.chat.completions.create(messages=[{"role":"user","content":komut}], model="llama-3.3-70b-versatile")
             st.session_state.deney_metni = res.choices[0].message.content
             st.session_state.deney_hazir = True
@@ -154,3 +154,4 @@ if st.session_state.deney_hazir:
 # --- 6. İMZA ---
 st.divider()
 st.markdown("<h5 style='text-align: center;'>EcoLab AI © 2026 | Damla</h5>", unsafe_allow_html=True)
+
